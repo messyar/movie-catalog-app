@@ -1,8 +1,9 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Request, status, Depends, Response
+from fastapi import FastAPI, Request, status, Depends
 from fastapi.exceptions import HTTPException
 
+from api.api_v1.movies.crud import MOVIE_LIST
 from schemas.movie import Movie
 
 app = FastAPI(
@@ -23,34 +24,6 @@ def read_root(
         "message": f"{name}, welcome to Movie Catalog app!",
         "docs": str(docs_url),
     }
-
-
-MOVIE_LIST = [
-    Movie(
-        id=1,
-        name="Snatch",
-        description="""A thief who steals items.""",
-        year=2001,
-        rating=9.0,
-        age_limit=18,
-    ),
-    Movie(
-        id=2,
-        name="Бриллиантовая рука",
-        description="Упал, очнулся - гипс с бриллиантами.",
-        year=1980,
-        rating=10.0,
-        age_limit=12,
-    ),
-    Movie(
-        id=3,
-        name="Матрица",
-        description="Мы все живем в матрице.",
-        year=2002,
-        rating=9.5,
-        age_limit=16,
-    ),
-]
 
 
 def get_movie_by_id(
