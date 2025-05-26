@@ -7,7 +7,7 @@ from fastapi import Depends, APIRouter, status, Form
 
 from api.api_v1.movies.crud import MOVIE_LIST
 from api.api_v1.movies.dependencies import get_movie_by_id
-from schemas.movie import Movie
+from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(
     prefix="/movies",
@@ -33,19 +33,11 @@ def generate_movie_id():
     status_code=status.HTTP_201_CREATED,
 )
 def create_movie(
-    name: Annotated[str, Len(5, 150), Form()],
-    description: Annotated[str, Len(10, 250), Form()],
-    year: Annotated[int, Interval(ge=1895), Form()],
-    rating: Annotated[int, Interval(ge=1, le=10), Form()],
-    age_limit: Annotated[int, Interval(ge=0, le=18), Form()] = 18,
+    movie_create: MovieCreate,
 ):
     return Movie(
         id=generate_movie_id(),
-        name=name,
-        description=description,
-        year=year,
-        rating=rating,
-        age_limit=age_limit,
+        **movie_create.model_dump(),
     )
 
 
