@@ -12,7 +12,7 @@ class MovieBase(BaseModel):
 class MovieCreate(MovieBase):
     name: Annotated[
         str,
-        Len(5, 150),
+        Len(5, 250),
     ]
     description: Annotated[
         str,
@@ -33,7 +33,7 @@ class MovieCreate(MovieBase):
 
 
 class Movie(MovieBase):
-    id: int
+    slug: str
     year: int
     rating: float
     age_limit: int

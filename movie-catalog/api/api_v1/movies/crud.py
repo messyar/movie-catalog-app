@@ -2,7 +2,7 @@ from schemas.movie import Movie
 
 MOVIE_LIST = [
     Movie(
-        id=1,
+        slug="snatch-2001",
         name="Snatch",
         description="""A thief who steals items.""",
         year=2001,
@@ -10,7 +10,7 @@ MOVIE_LIST = [
         age_limit=18,
     ),
     Movie(
-        id=2,
+        slug="brilliantovaya-ruka-1980",
         name="Бриллиантовая рука",
         description="Упал, очнулся - гипс с бриллиантами.",
         year=1980,
@@ -18,10 +18,10 @@ MOVIE_LIST = [
         age_limit=12,
     ),
     Movie(
-        id=3,
+        slug="matrix-1999",
         name="Матрица",
         description="Мы все живем в матрице.",
-        year=2002,
+        year=1999,
         rating=9.5,
         age_limit=16,
     ),

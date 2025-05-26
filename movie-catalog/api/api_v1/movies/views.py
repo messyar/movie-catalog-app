@@ -1,12 +1,11 @@
-import datetime
 import random
-from annotated_types import Len, Interval
 from typing import Annotated
 
-from fastapi import Depends, APIRouter, status, Form
+from fastapi import Depends, APIRouter, status
 
-from api.api_v1.movies.crud import MOVIE_LIST
-from api.api_v1.movies.dependencies import get_movie_by_id
+from .crud import MOVIE_LIST
+from .dependencies import get_movie_by_slug
+from .helpers.slug_helper import create_slug
 from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(
@@ -23,10 +22,6 @@ def get_movies():
     return MOVIE_LIST
 
 
-def generate_movie_id():
-    return random.randint(5, 100)
-
-
 @router.post(
     "/",
     response_model=Movie,
@@ -36,13 +31,16 @@ def create_movie(
     movie_create: MovieCreate,
 ):
     return Movie(
-        id=generate_movie_id(),
+        slug=create_slug(
+            name_in=movie_create.name,
+            year=movie_create.year,
+        ),
         **movie_create.model_dump(),
     )
 
 
 @router.get("/{movie_id}", response_model=Movie)
 def get_movie(
-    movie: Annotated[Movie, Depends(get_movie_by_id)],
+    movie: Annotated[Movie, Depends(get_movie_by_slug)],
 ):
     return movie
