@@ -12,7 +12,7 @@ class MovieBase(BaseModel):
 class MovieCreate(MovieBase):
     name: Annotated[
         str,
-        Len(5, 250),
+        Len(1, 250),
     ]
     description: Annotated[
         str,
