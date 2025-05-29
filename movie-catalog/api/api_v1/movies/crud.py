@@ -2,8 +2,8 @@ from pydantic import BaseModel
 
 from schemas.movie import (
     Movie,
-    MovieCreate,
     MovieUpdate,
+    MovieUpdatePartial,
 )
 
 
@@ -26,9 +26,22 @@ class MovieStorage(BaseModel):
     def delete(self, movie_in: Movie) -> None:
         self.delete_by_slug(slug=movie_in.slug)
 
-    def update(self, movie: Movie, movie_in: MovieUpdate) -> Movie:
-        for key, value in movie_in:
-            setattr(movie, key, value)
+    def update(
+        self,
+        movie: Movie,
+        movie_in: MovieUpdate,
+    ) -> Movie:
+        for field_name, value in movie_in:
+            setattr(movie, field_name, value)
+        return movie
+
+    def update_partial(
+        self,
+        movie: Movie,
+        movie_in: MovieUpdatePartial,
+    ) -> Movie:
+        for field_name, value in movie_in.model_dump(exclude_unset=True).items():
+            setattr(movie, field_name, value)
         return movie
 
 
