@@ -45,6 +45,13 @@ class MovieExtended(MovieBase):
 
 class Movie(MovieExtended):
     slug: str
+    notes: str = ""
+
+
+class MovieRead(MovieExtended):
+    """Модель для чтения информации о фильме"""
+
+    slug: str
 
 
 class MovieCreate(MovieExtended):
