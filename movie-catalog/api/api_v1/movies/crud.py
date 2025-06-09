@@ -5,23 +5,23 @@ from schemas.movie import (
     MovieUpdate,
     MovieUpdatePartial,
 )
+from store.movies.movie_store import MovieStore
 
 
-class MovieStorage(BaseModel):
-    movie_info: dict[str, Movie] = {}
+class MovieCrud(BaseModel):
+    movie_store: MovieStore = MovieStore()
 
     def get(self) -> list[Movie]:
-        return list(self.movie_info.values())
+        return list(self.movie_store.get_movies().values())
 
     def get_by_slug(self, slug: str) -> Movie | None:
-        return self.movie_info.get(slug)
+        return self.movie_store.get_movie_by_slug(slug)
 
     def create(self, movie_in: Movie) -> Movie:
-        self.movie_info[movie_in.slug] = movie_in
-        return movie_in
+        return self.movie_store.create_movie(movie_in=movie_in)
 
     def delete_by_slug(self, slug: str) -> None:
-        self.movie_info.pop(slug, None)
+        self.movie_store.delete_movie_by_slug(slug=slug)
 
     def delete(self, movie_in: Movie) -> None:
         self.delete_by_slug(slug=movie_in.slug)
@@ -33,6 +33,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
+        self.movie_store.update_movie(movie=movie)
         return movie
 
     def update_partial(
@@ -42,40 +43,8 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
+        self.movie_store.update_movie(movie=movie)
         return movie
 
 
-storage = MovieStorage()
-
-storage.create(
-    Movie(
-        slug="snatch-2001",
-        name="Snatch",
-        description="""A thief who steals items.""",
-        year=2001,
-        rating=9.0,
-        age_limit=18,
-    )
-)
-
-storage.create(
-    Movie(
-        slug="brilliantovaya-ruka-1980",
-        name="Бриллиантовая рука",
-        description="Упал, очнулся - гипс с бриллиантами.",
-        year=1980,
-        rating=10.0,
-        age_limit=12,
-    ),
-)
-
-storage.create(
-    Movie(
-        slug="matrix-1999",
-        name="Матрица",
-        description="Мы все живем в матрице.",
-        year=1999,
-        rating=9.5,
-        age_limit=16,
-    ),
-)
+storage = MovieCrud()

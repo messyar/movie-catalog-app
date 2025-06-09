@@ -72,3 +72,7 @@ class MovieUpdatePartial(MovieExtended):
     year: YearString | None = None
     rating: RatingString | None = None
     age_limit: AgeLimitString | None = None
+
+
+class MoviesList(BaseModel):
+    movies: dict[str, Movie] = {}
