@@ -62,7 +62,7 @@ def update_movie_details(
 )
 def update_movie_details_partial(
     movie: MovieBySlug,
-    movie_in: MovieUpdate,
+    movie_in: MovieUpdatePartial,
 ) -> Movie:
     return storage.update_partial(movie=movie, movie_in=movie_in)
 

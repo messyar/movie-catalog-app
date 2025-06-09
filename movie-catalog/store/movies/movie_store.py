@@ -1,24 +1,18 @@
 import logging
-from pathlib import Path
 
 from pydantic import BaseModel, ValidationError
 
 from schemas.movie import Movie, MoviesList
+from core.config import store_path
 
-BASE_PATH = Path(__file__).parent.parent
 
 logger = logging.getLogger(__name__)
 
-store_path = BASE_PATH / "store.json"
-if not store_path.exists():
-    with open(store_path, "w") as f:
-        f.write(MoviesList.model_validate({}).model_dump_json())
-
 
 def get_movies_data() -> str:
-    with open(store_path, "r") as f_read:
-        movie_data = f_read.read()
-    return movie_data
+    if not store_path.exists():
+        store_path.write_text(MoviesList(movies={}).model_dump_json())
+    return store_path.read_text()
 
 
 class MovieStore(BaseModel):
@@ -27,8 +21,7 @@ class MovieStore(BaseModel):
         self,
         movies: dict[str, Movie],
     ) -> None:
-        with open(store_path, "w") as data_file:
-            data_file.write(MoviesList(movies=movies).model_dump_json())
+        store_path.write_text(MoviesList(movies=movies).model_dump_json(indent=2))
 
     def get_movies(
         self,
