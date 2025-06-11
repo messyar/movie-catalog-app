@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 def get_movies_data() -> str:
     if not store_path.exists():
         store_path.write_text(MoviesList(movies={}).model_dump_json())
+        logger.warning("Store file not found, created a new one")
     return store_path.read_text()
 
 
@@ -22,14 +23,17 @@ class MovieStore(BaseModel):
         movies: dict[str, Movie],
     ) -> None:
         store_path.write_text(MoviesList(movies=movies).model_dump_json(indent=2))
+        logger.info("Movie saved to store successfully")
 
     def get_movies(
         self,
     ) -> dict[str, Movie]:
         try:
-            return MoviesList.model_validate_json(get_movies_data()).movies
+            movies = MoviesList.model_validate_json(get_movies_data()).movies
+            logger.warning("Movies loaded from store successfully")
+            return movies
         except ValidationError as exc:
-            logger.error("Failed to validate movies: %s", exc)
+            logger.warning("Failed to validate movies")
         return {}
 
     def get_movie_by_slug(
@@ -43,9 +47,9 @@ class MovieStore(BaseModel):
         movie_in: Movie,
     ) -> Movie:
         movies = self.get_movies()
-        logger.info("Movies: %s", movies)
         movies[movie_in.slug] = movie_in
         self.save(movies=movies)
+        logger.info("Movie created successfully")
         return movie_in
 
     def delete_movie_by_slug(

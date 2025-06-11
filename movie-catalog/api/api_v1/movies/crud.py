@@ -1,3 +1,5 @@
+import logging
+
 from pydantic import BaseModel
 
 from schemas.movie import (
