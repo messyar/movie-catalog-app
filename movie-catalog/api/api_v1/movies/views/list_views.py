@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, BackgroundTasks
 
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.helpers.slug_helper import create_slug
@@ -29,7 +29,9 @@ def get_movies() -> list[Movie]:
 )
 def create_movie(
     movie_create: MovieCreate,
+    background_tasks: BackgroundTasks,
 ) -> Movie:
+    background_tasks.add_task(storage.save_to_store)
     return storage.create(
         Movie(
             slug=create_slug(

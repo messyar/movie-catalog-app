@@ -47,13 +47,11 @@ class MovieCrud(BaseModel):
 
     def create(self, movie_in: Movie) -> Movie:
         self.movies[movie_in.slug] = movie_in
-        self.save_to_store()
         log.info("Movie created successfully")
         return movie_in
 
     def delete_by_slug(self, slug: str) -> None:
         self.movies.pop(slug)
-        self.save_to_store()
 
     def delete(self, movie_in: Movie) -> None:
         self.delete_by_slug(slug=movie_in.slug)
@@ -65,7 +63,6 @@ class MovieCrud(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
-        self.save_to_store()
         return movie
 
     def update_partial(
@@ -75,7 +72,6 @@ class MovieCrud(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
-        self.save_to_store()
         return movie
 
 
