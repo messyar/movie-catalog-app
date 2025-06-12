@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 BASE_PATH = Path(__file__).resolve().parent.parent
-store_path = BASE_PATH / "store.json"
+STORE_PATH = BASE_PATH / "store.json"
 
 
 LOG_LEVEL = logging.INFO
