@@ -1,10 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends
 from starlette import status
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.dependencies import get_movie_by_slug, save_storage
+from api.api_v1.movies.dependencies import get_movie_by_slug
 from schemas.movie import (
     Movie,
     MovieUpdate,
@@ -28,10 +28,6 @@ router = APIRouter(
     },
 )
 
-save_router = APIRouter(
-    dependencies=[Depends(save_storage)],
-)
-
 
 MovieBySlug = Annotated[
     Movie,
@@ -49,7 +45,7 @@ def get_movie(
     return movie
 
 
-@save_router.put(
+@router.put(
     "/",
     response_model=MovieRead,
 )
@@ -60,7 +56,7 @@ def update_movie_details(
     return storage.update(movie=movie, movie_in=movie_in)
 
 
-@save_router.patch(
+@router.patch(
     "/",
     response_model=MovieRead,
 )
@@ -71,7 +67,7 @@ def update_movie_details_partial(
     return storage.update_partial(movie=movie, movie_in=movie_in)
 
 
-@save_router.delete(
+@router.delete(
     "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
@@ -79,8 +75,3 @@ def delete_movie(
     movie: MovieBySlug,
 ) -> None:
     storage.delete(movie_in=movie)
-
-
-router.include_router(
-    save_router,
-)
