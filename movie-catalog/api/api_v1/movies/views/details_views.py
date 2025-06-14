@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, BackgroundTasks
 from starlette import status
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.dependencies import get_movie_by_slug
+from api.api_v1.movies.dependencies import get_movie_by_slug, save_storage
 from schemas.movie import (
     Movie,
     MovieUpdate,
@@ -28,6 +28,10 @@ router = APIRouter(
     },
 )
 
+save_router = APIRouter(
+    dependencies=[Depends(save_storage)],
+)
+
 
 MovieBySlug = Annotated[
     Movie,
@@ -45,39 +49,38 @@ def get_movie(
     return movie
 
 
-@router.put(
+@save_router.put(
     "/",
     response_model=MovieRead,
 )
 def update_movie_details(
     movie: MovieBySlug,
     movie_in: MovieUpdate,
-    background_tasks: BackgroundTasks,
 ) -> Movie:
-    background_tasks.add_task(storage.save_to_store)
     return storage.update(movie=movie, movie_in=movie_in)
 
 
-@router.patch(
+@save_router.patch(
     "/",
     response_model=MovieRead,
 )
 def update_movie_details_partial(
     movie: MovieBySlug,
     movie_in: MovieUpdatePartial,
-    background_tasks: BackgroundTasks,
 ) -> Movie:
-    background_tasks.add_task(storage.save_to_store)
     return storage.update_partial(movie=movie, movie_in=movie_in)
 
 
-@router.delete(
+@save_router.delete(
     "/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def delete_movie(
     movie: MovieBySlug,
-    background_tasks: BackgroundTasks,
 ) -> None:
-    background_tasks.add_task(storage.save_to_store)
     storage.delete(movie_in=movie)
+
+
+router.include_router(
+    save_router,
+)

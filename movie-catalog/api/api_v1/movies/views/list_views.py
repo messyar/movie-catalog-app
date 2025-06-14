@@ -1,6 +1,8 @@
 from fastapi import APIRouter, status, BackgroundTasks
+from fastapi.params import Depends
 
 from api.api_v1.movies.crud import storage
+from api.api_v1.movies.dependencies import save_storage
 from api.api_v1.movies.helpers.slug_helper import create_slug
 from schemas.movie import (
     Movie,
@@ -13,6 +15,10 @@ router = APIRouter(
     tags=["Movies"],
 )
 
+save_router = APIRouter(
+    dependencies=[Depends(save_storage)],
+)
+
 
 @router.get(
     "/",
@@ -22,16 +28,14 @@ def get_movies() -> list[Movie]:
     return storage.get()
 
 
-@router.post(
+@save_router.post(
     "/",
     response_model=MovieRead,
     status_code=status.HTTP_201_CREATED,
 )
 def create_movie(
     movie_create: MovieCreate,
-    background_tasks: BackgroundTasks,
 ) -> Movie:
-    background_tasks.add_task(storage.save_to_store)
     return storage.create(
         Movie(
             slug=create_slug(
@@ -41,3 +45,8 @@ def create_movie(
             **movie_create.model_dump(),
         )
     )
+
+
+router.include_router(
+    save_router,
+)
