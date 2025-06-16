@@ -5,7 +5,10 @@ from fastapi import (
 )
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.dependencies import save_storage
+from api.api_v1.movies.dependencies import (
+    save_storage,
+    check_api_token,
+)
 from api.api_v1.movies.helpers.slug_helper import create_slug
 from schemas.movie import (
     Movie,
@@ -16,7 +19,7 @@ from schemas.movie import (
 router = APIRouter(
     prefix="/movies",
     tags=["Movies"],
-    dependencies=[Depends(save_storage)],
+    dependencies=[Depends(save_storage), Depends(check_api_token)],
 )
 
 
