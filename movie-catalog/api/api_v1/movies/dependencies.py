@@ -47,9 +47,9 @@ def save_storage(
         background_task.add_task(storage.save_to_store)
 
 
-def check_api_token(
+def check_api_token_for_unsafe_methods(
     request: Request,
-    api_token: Annotated[str, Query] = None,
+    api_token: Annotated[str, Query] = "",
 ):
     if request.method in UNSAFE_METHODS:
         if api_token not in API_TOKENS:

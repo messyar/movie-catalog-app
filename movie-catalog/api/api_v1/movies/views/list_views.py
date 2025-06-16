@@ -7,7 +7,7 @@ from fastapi import (
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import (
     save_storage,
-    check_api_token,
+    check_api_token_for_unsafe_methods,
 )
 from api.api_v1.movies.helpers.slug_helper import create_slug
 from schemas.movie import (
@@ -19,7 +19,22 @@ from schemas.movie import (
 router = APIRouter(
     prefix="/movies",
     tags=["Movies"],
-    dependencies=[Depends(save_storage), Depends(check_api_token)],
+    dependencies=[
+        Depends(save_storage),
+        Depends(check_api_token_for_unsafe_methods),
+    ],
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {
+            "description": "Unauthenticated. Only for unsafe methods",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Invalid API token",
+                    },
+                },
+            },
+        },
+    },
 )
 
 
