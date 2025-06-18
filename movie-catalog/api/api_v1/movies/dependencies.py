@@ -6,7 +6,7 @@ from fastapi import (
     BackgroundTasks,
     Request,
     status,
-    Query,
+    Header,
 )
 
 from api.api_v1.movies.crud import storage
@@ -49,7 +49,7 @@ def save_storage(
 
 def check_api_token_for_unsafe_methods(
     request: Request,
-    api_token: Annotated[str, Query] = "",
+    api_token: Annotated[str, Header(alias="x-auth-token")] = "",
 ):
     if request.method in UNSAFE_METHODS:
         if api_token not in API_TOKENS:
