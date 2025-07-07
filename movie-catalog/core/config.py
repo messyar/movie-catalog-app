@@ -25,3 +25,4 @@ REDIS_DB: int = 0
 REDIS_DB_TOKENS: int = 1
 
 REDIS_TOKENS_SET_NAME: str = "tokens"
+TOKEN_LENGTH = 16

@@ -16,7 +16,7 @@ from fastapi.security import (
 )
 
 from api.api_v1.movies.crud import storage
-from core.config import USERS_DB, REDIS_TOKENS_SET_NAME
+from core.config import USERS_DB
 from .redis import redis_tokens
 from schemas.movie import Movie
 
@@ -69,7 +69,9 @@ def save_storage(
 def validate_api_token(
     api_token: HTTPAuthorizationCredentials,
 ):
-    if redis_tokens.sismember(REDIS_TOKENS_SET_NAME, api_token.credentials):
+    if redis_tokens.token_exists(
+        token=api_token.credentials,
+    ):
         return
 
     raise HTTPException(
